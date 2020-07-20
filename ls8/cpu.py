@@ -7,7 +7,20 @@ class CPU:
 
     def __init__(self):
         """Construct a new CPU."""
-        pass
+        # initialize program counter as 0
+        self.pc = 0
+        # initialize ram (memory for instructions) w/ 256 * 0s
+        self.ram = [0] * 256
+        # initialize register with 8 * 0s
+        self.reg = [0] * 8
+
+    #function to return value at address in memory (see mar in ls8-spec)
+    def ram_read(self, mar):
+        return self.ram[mar]
+        
+    # function to write value to address in ram
+    def ram_write(self, mar, mdr):
+        self.ram[mar] = mdr
 
     def load(self):
         """Load a program into memory."""
@@ -62,4 +75,21 @@ class CPU:
 
     def run(self):
         """Run the CPU."""
-        pass
+        # initialize instruction register as 0
+        ir = 0
+        # while loop ends at HLT (0b00000001 = 1)
+        while ir != 1:
+            # set ir to the first instruction in ram
+            ir = self.ram_read(self.pc)
+            # if ir is LDI (0b10000010 = 130)
+            if ir == 130:
+                # set reg at address LDI + 1 equal to value at LDI + 2
+                self.reg[self.ram_read(self.pc + 1)] = self.ram_read(self.pc + 2)
+                self.pc += 3
+            # elif ir is PRN (0b01000111 = 71)
+            elif ir == 71:
+                # print value at reg at address PRN + 1
+                print(self.reg[self.ram_read(self.pc + 1)])
+                self.pc += 2
+
+
